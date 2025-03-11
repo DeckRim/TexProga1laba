@@ -1,0 +1,138 @@
+#include <iostream>
+#include <string>
+
+using namespace std;
+
+struct Node {
+    string title;
+    int year;
+    double score;
+    Node* next;
+};
+
+Node* head = nullptr;
+
+void addToStart(string title, int year, double score) {
+    Node* newNode = new Node;
+    newNode->title = title;
+    newNode->year = year;
+    newNode->score = score;
+    newNode->next = head;
+    head = newNode;
+}
+
+void addToEnd(string title, int year, double score) {
+    Node* newNode = new Node;
+    newNode->title = title;
+    newNode->year = year;
+    newNode->score = score;
+    newNode->next = nullptr;
+
+    if (head == nullptr) {
+        head = newNode;
+        return;
+    }
+
+    Node* temp = head;
+    while (temp->next != nullptr) {
+        temp = temp->next;
+    }
+    temp->next = newNode;
+}
+
+void addAfter(string afterTitle, string title, int year, double score) {
+    Node* temp = head;
+    while (temp != nullptr && temp->title != afterTitle) {
+        temp = temp->next;
+    }
+
+    if (temp != nullptr) {
+        Node* newNode = new Node;
+        newNode->title = title;
+        newNode->year = year;
+        newNode->score = score;
+        newNode->next = temp->next;
+        temp->next = newNode;
+    } else {
+        cout << "Film with name '" << afterTitle << "' was not found" << endl;
+    }
+}
+
+void addBefore(string beforeTitle, string title, int year, double score) {
+    if (head == nullptr) return;
+
+    if (head->title == beforeTitle) {
+        addToStart(title, year, score);
+        return;
+    }
+
+    Node* temp = head;
+    while (temp->next != nullptr && temp->next->title != beforeTitle) {
+        temp = temp->next;
+    }
+
+    if (temp->next != nullptr) {
+        Node* newNode = new Node;
+        newNode->title = title;
+        newNode->year = year;
+        newNode->score = score;
+        newNode->next = temp->next;
+        temp->next = newNode;
+    } else {
+        cout << "Film with name '" << beforeTitle << "' was not found" << endl;
+    }
+}
+
+void removeByTitle(string title) {
+    if (head == nullptr) return;
+
+    if (head->title == title) {
+        Node* temp = head;
+        head = head->next;
+        delete temp;
+        return;
+    }
+
+    Node* temp = head;
+    while (temp->next != nullptr && temp->next->title != title) {
+        temp = temp->next;
+    }
+
+    if (temp->next != nullptr) {
+        Node* toDelete = temp->next;
+        temp->next = toDelete->next;
+        delete toDelete;
+    } else {
+        cout << "Film with name '" << title << "' was not found!" << endl;
+    }
+}
+
+void printList() {
+    Node* temp = head;
+    while (temp != nullptr) {
+        cout << "Film: " << temp->title << ", Year: " << temp->year << ", Score: " << temp->score << endl;
+        temp = temp->next;
+    }
+}
+
+int main() {
+    addToEnd("Silent Echo", 2015, 7.9);
+    addToStart("Shadow Realm", 2003, 8.5);
+    addToEnd("Lost Horizon", 2018, 8.2);
+
+    cout << "The list of films:" << endl;
+    printList();
+
+    addAfter("Silent Echo", "Dark Tide", 2010, 7.8);
+    addBefore("Lost Horizon", "Celestial Voyage", 2012, 8.0);
+
+    cout << "\nList of films after inserts before and after:" << endl;
+    printList();
+
+    removeByTitle("Silent Echo");
+
+    cout << "\nList of films after 'Silent Echo' was deleted:" << endl;
+    printList();
+
+    return 0;
+}
